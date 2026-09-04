@@ -8,7 +8,14 @@
 - **Secondary category:** Utilities
 - **Age rating:** Complete Apple's questionnaire honestly; expected rating is the lowest general-audience tier because the app has no restricted content.
 - **Price:** USD $9.99 paid download
-- **Copyright:** Replace with the current year and the legal seller name shown in App Store Connect.
+- **Copyright:** © 2026 AppsbyJon
+- **Seller name:** AppsbyJon
+- **Support URL:** https://jonb99551-spec.github.io/mainline-asphalt-planner/
+- **Marketing URL:** https://jonb99551-spec.github.io/mainline-asphalt-planner/
+- **Privacy policy URL:** https://jonb99551-spec.github.io/mainline-asphalt-planner/privacy.html
+- **Support email:** jonb99551@gmail.com
+- **Bundle ID:** com.mainlineasphalt.planner
+- **Team ID:** L6YS63G3G6
 
 ## Promotional text
 
@@ -71,13 +78,11 @@ Suggested screenshot headlines: “Plan Every Paving Run,” “Hit Tonnage at E
 
 These answers are correct for the current source code. Reassess them if analytics, crash reporting, cloud sync, maps, or accounts are added.
 
-## Information still required from the owner
+## Remaining owner tasks
 
-- Apple Developer team selection in Xcode
-- Final unique bundle identifier
-- Hosted support URL
-- Hosted privacy-policy URL
-- Seller/copyright name
-- App Store Connect name reservation
-- Screenshots captured from the signed release build
-
+- Push `docs/` folder to a public GitHub repo and enable GitHub Pages (source = `main`, folder = `/docs`). Update the URLs above if your GitHub username differs from the placeholder `jonb99551-spec`.
+- Reserve app name "Mainline: Asphalt Planner" in App Store Connect.
+- Generate an App Store Connect API key (Users and Access → Integrations → App Store Connect API) if you want CLI uploads.
+- Answer age-rating questionnaire in App Store Connect (expected: 4+).
+- Capture 5–6 iPhone 17 Pro Max screenshots (see plan above) and upload.
+- Archive in Xcode, validate, upload, then submit for App Review.
