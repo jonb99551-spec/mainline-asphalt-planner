@@ -40,7 +40,7 @@ Last prep pass: **September 4, 2026**
 
 ## App Store Connect record
 
-- [ ] Reserve "Mainline: Asphalt Planner" (My Apps → +).
+- [ ] Reserve "Mainline Asphalt Planner" (My Apps → +).
 - [ ] Paste listing copy from `AppStore/STORE_LISTING.md`.
 - [ ] Set price tier to USD $9.99.
 - [ ] Upload iPhone screenshots.

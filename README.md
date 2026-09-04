@@ -1,4 +1,4 @@
-# Mainline: Asphalt Planner
+# Mainline Asphalt Planner
 
 A clean, offline-first SwiftUI iPhone daily production planner for asphalt paving and milling. No account, server, analytics, or network connection is required.
 

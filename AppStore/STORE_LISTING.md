@@ -1,9 +1,9 @@
-# Mainline: Asphalt Planner — App Store Listing
+# Mainline Asphalt Planner — App Store Listing
 
 ## App information
 
-- **App Store name:** Mainline: Asphalt Planner
-- **Subtitle:** Paving yield and truck planner
+- **App Store name:** Mainline Asphalt Planner
+- **Subtitle:** Paving yield and truck planner  _(30-char max, uses 30)_
 - **Primary category:** Business
 - **Secondary category:** Utilities
 - **Age rating:** Complete Apple's questionnaire honestly; expected rating is the lowest general-audience tier because the app has no restricted content.
@@ -81,7 +81,7 @@ These answers are correct for the current source code. Reassess them if analytic
 ## Remaining owner tasks
 
 - Push `docs/` folder to a public GitHub repo and enable GitHub Pages (source = `main`, folder = `/docs`). Update the URLs above if your GitHub username differs from the placeholder `jonb99551-spec`.
-- Reserve app name "Mainline: Asphalt Planner" in App Store Connect.
+- Reserve app name "Mainline Asphalt Planner" in App Store Connect.
 - Generate an App Store Connect API key (Users and Access → Integrations → App Store Connect API) if you want CLI uploads.
 - Answer age-rating questionnaire in App Store Connect (expected: 4+).
 - Capture 5–6 iPhone 17 Pro Max screenshots (see plan above) and upload.
