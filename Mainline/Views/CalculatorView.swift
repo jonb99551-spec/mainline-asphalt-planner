@@ -1,4 +1,5 @@
 import SwiftUI
+import UIKit
 
 struct CalculatorView: View {
     @EnvironmentObject private var store: JobStore
@@ -7,23 +8,68 @@ struct CalculatorView: View {
     @State private var showingStationPlan = false
     @State private var showingDailyReport = false
     @State private var savedConfirmation = false
+    @State private var showingNewReportConfirmation = false
+    @State private var loadedCurrentReport = false
+    private let autosavesCurrentReport: Bool
 
-    init(estimate: Estimate = Estimate()) { _estimate = State(initialValue: estimate) }
+    init(estimate: Estimate? = nil) {
+        autosavesCurrentReport = estimate == nil
+        _estimate = State(initialValue: estimate ?? Estimate())
+    }
 
     var body: some View {
         ScrollView {
             VStack(spacing: 16) {
-                header; stationCard; pavingCard; haulCard; pavingResults; millingCard; trackerCard; closeoutCard; saveButton
+                header
+                if autosavesCurrentReport { startNewReportButton }
+                projectInformationCard
+                stationCard; pavingCard; haulCard; pavingResults; millingCard; trackerCard; closeoutCard; saveButton
             }.padding()
         }
-        .background(Color(.systemGroupedBackground))
+        .scrollDismissesKeyboard(.interactively)
+        .background(Color(.systemGroupedBackground).onTapGesture { dismissKeyboard() })
         .navigationTitle("Daily Asphalt Planner")
         .navigationBarTitleDisplayMode(.inline)
-        .toolbar { ToolbarItem(placement: .topBarTrailing) { Button("Job Info") { showingDetails = true } } }
+        .toolbar {
+            ToolbarItem(placement: .topBarTrailing) { Button("Job Info") { showingDetails = true } }
+            ToolbarItemGroup(placement: .keyboard) {
+                Spacer()
+                Button("Done") { dismissKeyboard() }
+            }
+        }
         .sheet(isPresented: $showingDetails) { JobDetailsView(estimate: $estimate) }
         .sheet(isPresented: $showingStationPlan) { NavigationStack { StationPlanView(estimate: estimate) } }
         .sheet(isPresented: $showingDailyReport) { NavigationStack { DailyReportView(estimate: estimate) } }
         .alert("Plan Saved", isPresented: $savedConfirmation) { Button("OK", role: .cancel) { } }
+        .alert("Start a new report?", isPresented: $showingNewReportConfirmation) {
+            Button("Cancel", role: .cancel) { }
+            Button("Start New Report", role: .destructive) {
+                estimate = store.startNewReport()
+                dismissKeyboard()
+            }
+        } message: {
+            Text("This will clear the current report.")
+        }
+        .onAppear {
+            guard autosavesCurrentReport, !loadedCurrentReport else { return }
+            estimate = store.currentReport
+            loadedCurrentReport = true
+        }
+        .onChange(of: estimate) { _, newValue in
+            guard autosavesCurrentReport, loadedCurrentReport else { return }
+            store.updateCurrentReport(newValue)
+        }
+    }
+
+    private var startNewReportButton: some View {
+        Button { showingNewReportConfirmation = true } label: {
+            Label("Start New Report", systemImage: "doc.badge.plus")
+                .font(.headline)
+                .frame(maxWidth: .infinity)
+        }
+        .buttonStyle(.borderedProminent)
+        .controlSize(.large)
+        .tint(.orange)
     }
 
     private var header: some View {
@@ -34,6 +80,39 @@ struct CalculatorView: View {
                 Text(estimate.jobName).font(.headline)
                 Text("Plan the run. Keep the operation moving.").font(.caption).foregroundStyle(.secondary)
             }; Spacer()
+        }
+    }
+
+    private var projectInformationCard: some View {
+        SectionCard(title: "Project Information") {
+            DatePicker("Report date", selection: $estimate.reportDate, displayedComponents: .date)
+            Divider()
+            TextField("Project name", text: $estimate.jobName)
+                .textContentType(.organizationName)
+                .submitLabel(.next)
+            Divider()
+            TextField("Project number", text: $estimate.projectNumber)
+                .submitLabel(.next)
+            Divider()
+            TextField("Project location", text: $estimate.location)
+                .textContentType(.fullStreetAddress)
+                .submitLabel(.next)
+            Divider()
+            TextField("Contractor / Company", text: $estimate.contractorCompany)
+                .textContentType(.organizationName)
+                .submitLabel(.next)
+            Divider()
+            TextField("Inspector / QC Technician", text: $estimate.inspectorQCTechnician)
+                .textContentType(.name)
+                .submitLabel(.next)
+            Divider()
+            TextField("Foreman / Superintendent", text: $estimate.foremanSuperintendent)
+                .textContentType(.name)
+                .submitLabel(.next)
+            Divider()
+            TextField("Optional notes", text: $estimate.notes, axis: .vertical)
+                .lineLimit(3...6)
+                .submitLabel(.done)
         }
     }
 
@@ -156,5 +235,9 @@ struct CalculatorView: View {
         guard minutes.isFinite, minutes > 0 else { return "—" }
         let total = Int(minutes.rounded())
         return total >= 60 ? "\(total / 60) hr \(total % 60) min" : "\(total) min"
+    }
+
+    private func dismissKeyboard() {
+        UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
     }
 }

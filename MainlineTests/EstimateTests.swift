@@ -46,5 +46,46 @@ final class EstimateTests: XCTestCase {
         XCTAssertEqual(Stationing.feet(from: "50+25"), 5_025)
         XCTAssertEqual(Stationing.string(5_025), "50+25")
     }
-}
 
+    func testLegacySavedReportLoadsWithSafeProjectDefaults() throws {
+        let createdAt = Date(timeIntervalSince1970: 1_700_000_000)
+        let legacy: [String: Any] = [
+            "id": UUID().uuidString,
+            "createdAt": ISO8601DateFormatter().string(from: createdAt),
+            "updatedAt": ISO8601DateFormatter().string(from: createdAt),
+            "jobName": "Legacy paving plan",
+            "location": "Route 10",
+            "notes": "Existing note",
+            "startStationFeet": 0,
+            "endStationFeet": 1000,
+            "widthFeet": 12,
+            "desiredSpreadRate": 285
+        ]
+        let data = try JSONSerialization.data(withJSONObject: legacy)
+        let decoder = JSONDecoder()
+        decoder.dateDecodingStrategy = .iso8601
+
+        let decoded = try decoder.decode(Estimate.self, from: data)
+
+        XCTAssertEqual(decoded.jobName, "Legacy paving plan")
+        XCTAssertEqual(decoded.reportDate.timeIntervalSince1970, createdAt.timeIntervalSince1970, accuracy: 1)
+        XCTAssertEqual(decoded.projectNumber, "")
+        XCTAssertEqual(decoded.contractorCompany, "")
+        XCTAssertEqual(decoded.inspectorQCTechnician, "")
+        XCTAssertEqual(decoded.foremanSuperintendent, "")
+        XCTAssertEqual(decoded.plannedTons, 190, accuracy: 0.001)
+    }
+
+    func testBlankReportClearsEntriesAndUsesRequestedDate() {
+        let date = Date(timeIntervalSince1970: 1_800_000_000)
+        let report = Estimate.blankReport(on: date)
+
+        XCTAssertEqual(report.reportDate, date)
+        XCTAssertEqual(report.jobName, "")
+        XCTAssertEqual(report.location, "")
+        XCTAssertEqual(report.endStationFeet, 0)
+        XCTAssertEqual(report.desiredSpreadRate, 0)
+        XCTAssertEqual(report.totalTonsDelivered, 0)
+        XCTAssertEqual(report.wasteTons, 0)
+    }
+}

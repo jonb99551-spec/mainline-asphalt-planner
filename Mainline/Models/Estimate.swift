@@ -4,8 +4,13 @@ struct Estimate: Codable, Identifiable, Equatable {
     var id = UUID()
     var createdAt = Date()
     var updatedAt = Date()
+    var reportDate = Date()
     var jobName = "Today's Paving Plan"
+    var projectNumber = ""
     var location = ""
+    var contractorCompany = ""
+    var inspectorQCTechnician = ""
+    var foremanSuperintendent = ""
     var notes = ""
 
     // Stationing is stored in feet. 5,000 feet displays as 50+00.
@@ -25,6 +30,80 @@ struct Estimate: Codable, Identifiable, Equatable {
     var actualTonsUsed = 0.0
     var totalTonsDelivered = 0.0
     var wasteTons = 0.0
+
+    init() {}
+
+    static func blankReport(on date: Date = Date()) -> Estimate {
+        var report = Estimate()
+        report.createdAt = date
+        report.updatedAt = date
+        report.reportDate = date
+        report.jobName = ""
+        report.projectNumber = ""
+        report.location = ""
+        report.contractorCompany = ""
+        report.inspectorQCTechnician = ""
+        report.foremanSuperintendent = ""
+        report.notes = ""
+        report.startStationFeet = 0
+        report.endStationFeet = 0
+        report.widthFeet = 0
+        report.desiredSpreadRate = 0
+        report.paverSpeedFeetPerMinute = 0
+        report.truckCapacityTons = 0
+        report.plantDistanceMiles = 0
+        report.averageHaulSpeedMPH = 0
+        report.plantAndTurnMinutes = 0
+        report.millingSpeedFeetPerMinute = 0
+        report.millingDepthInches = 0
+        report.millTruckCapacityTons = 0
+        report.currentStationFeet = 0
+        report.actualTonsUsed = 0
+        report.totalTonsDelivered = 0
+        report.wasteTons = 0
+        return report
+    }
+
+    private enum CodingKeys: String, CodingKey {
+        case id, createdAt, updatedAt, reportDate, jobName, projectNumber, location
+        case contractorCompany, inspectorQCTechnician, foremanSuperintendent, notes
+        case startStationFeet, endStationFeet, widthFeet, desiredSpreadRate
+        case paverSpeedFeetPerMinute, truckCapacityTons, plantDistanceMiles
+        case averageHaulSpeedMPH, plantAndTurnMinutes, millingSpeedFeetPerMinute
+        case millingDepthInches, millTruckCapacityTons, currentStationFeet
+        case actualTonsUsed, totalTonsDelivered, wasteTons
+    }
+
+    init(from decoder: Decoder) throws {
+        let values = try decoder.container(keyedBy: CodingKeys.self)
+        id = try values.decodeIfPresent(UUID.self, forKey: .id) ?? UUID()
+        createdAt = try values.decodeIfPresent(Date.self, forKey: .createdAt) ?? Date()
+        updatedAt = try values.decodeIfPresent(Date.self, forKey: .updatedAt) ?? createdAt
+        reportDate = try values.decodeIfPresent(Date.self, forKey: .reportDate) ?? createdAt
+        jobName = try values.decodeIfPresent(String.self, forKey: .jobName) ?? "Today's Paving Plan"
+        projectNumber = try values.decodeIfPresent(String.self, forKey: .projectNumber) ?? ""
+        location = try values.decodeIfPresent(String.self, forKey: .location) ?? ""
+        contractorCompany = try values.decodeIfPresent(String.self, forKey: .contractorCompany) ?? ""
+        inspectorQCTechnician = try values.decodeIfPresent(String.self, forKey: .inspectorQCTechnician) ?? ""
+        foremanSuperintendent = try values.decodeIfPresent(String.self, forKey: .foremanSuperintendent) ?? ""
+        notes = try values.decodeIfPresent(String.self, forKey: .notes) ?? ""
+        startStationFeet = try values.decodeIfPresent(Double.self, forKey: .startStationFeet) ?? 0
+        endStationFeet = try values.decodeIfPresent(Double.self, forKey: .endStationFeet) ?? 5_000
+        widthFeet = try values.decodeIfPresent(Double.self, forKey: .widthFeet) ?? 4
+        desiredSpreadRate = try values.decodeIfPresent(Double.self, forKey: .desiredSpreadRate) ?? 285
+        paverSpeedFeetPerMinute = try values.decodeIfPresent(Double.self, forKey: .paverSpeedFeetPerMinute) ?? 25
+        truckCapacityTons = try values.decodeIfPresent(Double.self, forKey: .truckCapacityTons) ?? 21
+        plantDistanceMiles = try values.decodeIfPresent(Double.self, forKey: .plantDistanceMiles) ?? 20
+        averageHaulSpeedMPH = try values.decodeIfPresent(Double.self, forKey: .averageHaulSpeedMPH) ?? 45
+        plantAndTurnMinutes = try values.decodeIfPresent(Double.self, forKey: .plantAndTurnMinutes) ?? 20
+        millingSpeedFeetPerMinute = try values.decodeIfPresent(Double.self, forKey: .millingSpeedFeetPerMinute) ?? 35
+        millingDepthInches = try values.decodeIfPresent(Double.self, forKey: .millingDepthInches) ?? 2
+        millTruckCapacityTons = try values.decodeIfPresent(Double.self, forKey: .millTruckCapacityTons) ?? 21
+        currentStationFeet = try values.decodeIfPresent(Double.self, forKey: .currentStationFeet) ?? startStationFeet
+        actualTonsUsed = try values.decodeIfPresent(Double.self, forKey: .actualTonsUsed) ?? 0
+        totalTonsDelivered = try values.decodeIfPresent(Double.self, forKey: .totalTonsDelivered) ?? 0
+        wasteTons = try values.decodeIfPresent(Double.self, forKey: .wasteTons) ?? 0
+    }
 
     var isDescending: Bool { endStationFeet < startStationFeet }
     var direction: Double { isDescending ? -1 : 1 }
